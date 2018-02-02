@@ -15,18 +15,7 @@ public class MeshGen {
 	private String outputFileName;
 	private boolean flag;
 	
-	private Vector3 calculateFaceNorm(OBJFace face){
-		Vector3 v1=mesh.getPosition(face, 1).clone().sub(mesh.getPosition(face, 0));
-		int i=2;
-		while(i<face.positions.length){
-			Vector3 v2=mesh.getPosition(face, i++).clone().sub(mesh.getPosition(face, 0));
-			Vector3 norm=new Vector3(0,0,0);
-			norm.add(v1).cross(v2).normalize();
-			if(!norm.equals(new Vector3(0,0,0)))//avoid parallel vector
-				return norm;
-		}
-		return new Vector3(0,0,0);
-	}
+	
 	private void constructCylinder(){
 		mesh=new OBJMesh();
 		//add texture first
@@ -39,44 +28,67 @@ public class MeshGen {
 			mesh.positions.add(new Vector3((float)Math.cos(-Math.PI/2-2*Math.PI*u1),(float)-1,(float)Math.sin(-Math.PI/2-2*Math.PI*u1)));
 			mesh.positions.add(new Vector3((float)Math.cos(-Math.PI/2-2*Math.PI*u2),(float)1,(float)Math.sin(-Math.PI/2-2*Math.PI*u2)));
 		}
-		mesh.uvs.add(new Vector2((float)0.25,(float) 0.75));//bottom
-		mesh.uvs.add(new Vector2((float)0.75,(float) 0.75));//top
 		mesh.positions.add(new Vector3(0,-1,0));
 		mesh.positions.add(new Vector3(0,1,0));
+		mesh.uvs.add(new Vector2(1,(float) 0));//bottom
+		mesh.uvs.add(new Vector2(1,(float) 0.5));//top
+
+		//add bottom cap texture
+		for(int i=0;i<n;i++) {//2n+i+2
+			mesh.uvs.add(new Vector2((float)(0.25+0.25*mesh.positions.get(2*i).x),(float)(0.75+0.25*mesh.positions.get(2*i).z)));
+		}
+		//add top cap texture
+		for(int i=0;i<n;i++) {//3n+i+2
+			mesh.uvs.add(new Vector2((float)(0.75+0.25*mesh.positions.get(2*i).x),(float)(0.75-0.25*mesh.positions.get(2*i).z)));
+		}
+		mesh.uvs.add(new Vector2((float)0.25,(float) 0.75));//bottom center--4n+2
+		mesh.uvs.add(new Vector2((float)0.75,(float) 0.75));//top center--4n+1+2
+		
+		//add normal
+		for(int i=0;i<n;i++) {
+			mesh.normals.add(new Vector3(mesh.positions.get(2*i).x,0,mesh.positions.get(2*i).z));
+		}
+		mesh.normals.add(new Vector3(0,-1,0));//bottom--n
+		mesh.normals.add(new Vector3(0, 1,0));//top --n+1
+		
 		//add face
-		//add bottom cap
-		for(int i=0;i<n;i++){
-			OBJFace face=new OBJFace(3,true,true);
-			face.setVertex(0, 2*n, 2*n, 2*n);
-			face.setVertex(1, 2*i, 2*i, 2*i);
-			face.setVertex(2, 2*((i+1)%n), 2*((i+1)%n), 2*((i+1)%n));
-			mesh.faces.add(face);
-		}
-		//add top cap
-		for(int i=0;i<n;i++){
-			OBJFace face=new OBJFace(3,true,true);
-			face.setVertex(0, 2*n+1, 2*n+1, 2*n+1);
-			face.setVertex(1, 2*i+1, 2*i+1, 2*i+1);
-			face.setVertex(2, 2*((i+1)%n)+1, 2*((i+1)%n)+1, 2*((i+1)%n)+1);
-			mesh.faces.add(face);
-		}
 		//add bottom side
 		for(int i=0;i<n;i++){
 			OBJFace face=new OBJFace(3,true,true);
-			face.setVertex(0, 2*i, 2*i, 2*i);
-			face.setVertex(1, 2*((i+1)%n), 2*((i+1)%n), 2*((i+1)%n));
-			face.setVertex(2, 2*(i%n)+1, 2*(i%n)+1, 2*(i%n)+1);
+			face.setVertex(0, 2*i, 2*i, i);
+			face.setVertex(1, 2*((i+1)%n), 2*(i+1), (i+1)%n);
+			face.setVertex(2, 2*((i+1)%n)+1, 2*(i+1)+1, (i+1)%n);
 			mesh.faces.add(face);
 		}
 		//add up side
 		for(int i=0;i<n;i++){
 			OBJFace face=new OBJFace(3,true,true);
-			face.setVertex(0, 2*i+1, 2*i+1, 2*i+1);
-			face.setVertex(1, 2*((i+1)%n)+1, 2*((i+1)%n)+1, 2*((i+1)%n)+1);
-			face.setVertex(2, 2*((i+1)%n), 2*((i+1)%n), 2*((i+1)%n));
+			face.setVertex(1, 2*i+1, 2*i+1, i);
+			face.setVertex(0, 2*((i+1)%n)+1, 2*(i+1)+1, (i+1)%n);
+			face.setVertex(2, 2*i, 2*i, i);
 			mesh.faces.add(face);
 		}
-		addNormal();
+		//add bottom cap
+		for(int i=0;i<n;i++){
+			OBJFace face=new OBJFace(3,true,true);
+			face.setVertex(1, 2*n, 4*n+2, n);
+			face.setVertex(0, 2*i, 2*n+i+2, n);
+			face.setVertex(2, 2*((i+1)%n), 2*n+(1+i)%n+2, n);
+			mesh.faces.add(face);
+		}
+		//add top cap
+		for(int i=0;i<n;i++){
+			OBJFace face=new OBJFace(3,true,true);
+			face.setVertex(0, 2*n+1, 4*n+1+2, n+1);
+			face.setVertex(1, 2*i+1, 3*n+i+2, n+1);
+			face.setVertex(2, 2*((i+1)%n)+1, 3*n+(i+1)%n+2, n+1);
+			mesh.faces.add(face);
+		}
+		
+		try{
+			mesh.writeOBJ(outputFileName);
+		}catch(Exception e) {System.out.print("fail to write "+outputFileName);}
+		
 	}
 	private void constructSphere(){
 			
@@ -94,6 +106,22 @@ public class MeshGen {
 			break;
 		}
 	}
+	
+	
+	
+	private Vector3 calculateFaceNorm(OBJFace face){
+		Vector3 v1=mesh.getPosition(face, 1).clone().sub(mesh.getPosition(face, 0));
+		int i=2;
+		while(i<face.positions.length){
+			Vector3 v2=mesh.getPosition(face, i++).clone().sub(mesh.getPosition(face, 0));
+			Vector3 norm=new Vector3(0,0,0);
+			norm.add(v1).cross(v2).normalize();
+			if(!norm.equals(new Vector3(0,0,0)))//avoid parallel vector
+				return norm;
+		}
+		return new Vector3(0,0,0);
+	}
+	
 	public void addNormal(){
 		try{
 			if(flag)mesh=new OBJMesh(inputFileName);

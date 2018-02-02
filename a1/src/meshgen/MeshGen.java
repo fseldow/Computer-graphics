@@ -90,8 +90,83 @@ public class MeshGen {
 		}catch(Exception e) {System.out.print("fail to write "+outputFileName);}
 		
 	}
+	
+	private Vector3 mapSphere(int i,int j) {
+		if(j==0)return new Vector3 (0,j*n+i,0);
+		if(j==m)return new Vector3 (1,j*n+i,1);
+		return new Vector3 (2+(j-1)*n+i%n,j*n+i,2+(j-1)*n+i%n);
+	}
 	private void constructSphere(){
-			
+		mesh=new OBJMesh();
+		float n_interval=(float)1.0/n;
+		float m_interval=(float)1.0/m;
+		//texture NO=i*m+j
+		for(int j=0;j<=m;j++) {
+			for(int i=0;i<=n;i++) {
+				mesh.uvs.add(new Vector2(i*n_interval,j*m_interval));
+			}
+		}
+		//postion
+		mesh.positions.add(new Vector3(0,-1,0));//south pole  0
+		mesh.positions.add(new Vector3(0,1,0));//north pole   1
+		for(int j=1;j<m;j++) {
+			for(int i=0;i<n;i++) {
+				float x=(float)(Math.cos(Math.PI/2+2.0*i/n*Math.PI))*(float)Math.sin(1.0*j/m*Math.PI);
+				float y=-(float)(Math.cos(1.0*j/m*Math.PI));
+				float z=-(float)(Math.sin(Math.PI/2+2.0*i/n*Math.PI))*(float)Math.sin(1.0*j/m*Math.PI);
+				mesh.positions.add(new Vector3(x,y,z));
+			}
+		}
+		//normal
+		for(Vector3 pos:mesh.positions) {
+			mesh.normals.add(pos);
+		}
+		//face
+		for(int j=1;j<m;j++) {
+			for(int i=0;i<n;i++) {
+				Vector3 v1=mapSphere(i,j);
+				Vector3 v2=mapSphere(i+1,j);
+				Vector3 v3=mapSphere(i,j+1);
+				Vector3 v4=mapSphere(i-1,j);
+				Vector3 v5=mapSphere(i,j-1);
+				OBJFace face1=new OBJFace(3,true,true);
+				face1.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
+				face1.setVertex(1, (int)v2.x, (int)v2.y, (int)v2.z);
+				face1.setVertex(2, (int)v3.x, (int)v3.y, (int)v3.z);
+				mesh.faces.add(face1);
+				
+				OBJFace face2=new OBJFace(3,true,true);
+				face2.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
+				face2.setVertex(1, (int)v4.x, (int)v4.y, (int)v4.z);
+				face2.setVertex(2, (int)v5.x, (int)v5.y, (int)v5.z);
+				mesh.faces.add(face2);
+			}
+		}
+		//bottom n
+		for(int i=0;i<n;i++) {
+			OBJFace face=new OBJFace(3,true,true);
+			Vector3 v1=mapSphere(i,0);
+			Vector3 v2=mapSphere(i,1);
+			Vector3 v3=mapSphere((i+1)%n,1);
+			face.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
+			face.setVertex(1, (int)v2.x, (int)v2.y, (int)v2.z);
+			face.setVertex(2, (int)v3.x, (int)v3.y, (int)v3.z);
+			mesh.faces.add(face);
+		}
+		for(int i=0;i<n;i++) {
+			OBJFace face=new OBJFace(3,true,true);
+			Vector3 v1=mapSphere(i,n);
+			Vector3 v2=mapSphere(i,n-1);
+			Vector3 v3=mapSphere((i+1)%n,n-1);
+			face.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
+			face.setVertex(1, (int)v3.x, (int)v3.y, (int)v3.z);
+			face.setVertex(2, (int)v2.x, (int)v2.y, (int)v2.z);
+			mesh.faces.add(face);
+		}
+		try {
+			mesh.writeOBJ(outputFileName);
+		}catch(Exception e) {System.out.print("failed to write "+outputFileName);}
+		
 	}
 
 	public void constructObj(){

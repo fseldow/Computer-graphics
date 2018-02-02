@@ -142,27 +142,7 @@ public class MeshGen {
 				mesh.faces.add(face2);
 			}
 		}
-		//bottom n
-		for(int i=0;i<n;i++) {
-			OBJFace face=new OBJFace(3,true,true);
-			Vector3 v1=mapSphere(i,0);
-			Vector3 v2=mapSphere(i,1);
-			Vector3 v3=mapSphere((i+1)%n,1);
-			face.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
-			face.setVertex(1, (int)v2.x, (int)v2.y, (int)v2.z);
-			face.setVertex(2, (int)v3.x, (int)v3.y, (int)v3.z);
-			mesh.faces.add(face);
-		}
-		for(int i=0;i<n;i++) {
-			OBJFace face=new OBJFace(3,true,true);
-			Vector3 v1=mapSphere(i,n);
-			Vector3 v2=mapSphere(i,n-1);
-			Vector3 v3=mapSphere((i+1)%n,n-1);
-			face.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
-			face.setVertex(1, (int)v3.x, (int)v3.y, (int)v3.z);
-			face.setVertex(2, (int)v2.x, (int)v2.y, (int)v2.z);
-			mesh.faces.add(face);
-		}
+		
 		try {
 			mesh.writeOBJ(outputFileName);
 		}catch(Exception e) {System.out.print("failed to write "+outputFileName);}

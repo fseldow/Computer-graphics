@@ -92,17 +92,24 @@ public class MeshGen {
 	}
 	
 	private Vector3 mapSphere(int i,int j) {
-		if(j==0)return new Vector3 (0,j*n+i,0);
-		if(j==m)return new Vector3 (1,j*n+i,1);
-		return new Vector3 (2+(j-1)*n+i%n,j*n+i,2+(j-1)*n+i%n);
+		
+		if(i==0&&j==0)i=n;
+		if(i==m&&j==n)i=0;
+		if(i<0){i+=n;}
+		float posIndex=2+((j-1)%m)*n+i%n,textureIndex=j*(n+1)+i-1;
+		if(j==0)posIndex=0;
+		if(j==m)posIndex=1;
+		return new Vector3(posIndex,textureIndex,posIndex);
 	}
 	private void constructSphere(){
 		mesh=new OBJMesh();
 		float n_interval=(float)1.0/n;
 		float m_interval=(float)1.0/m;
-		//texture NO=i*m+j
+		//texture NO=j*n+i-1
 		for(int j=0;j<=m;j++) {
 			for(int i=0;i<=n;i++) {
+				if(i==0&&j==0)continue;
+				if(i==n&&j==m)continue;
 				mesh.uvs.add(new Vector2(i*n_interval,j*m_interval));
 			}
 		}
@@ -127,19 +134,23 @@ public class MeshGen {
 				Vector3 v1=mapSphere(i,j);
 				Vector3 v2=mapSphere(i+1,j);
 				Vector3 v3=mapSphere(i,j+1);
-				Vector3 v4=mapSphere(i-1,j);
-				Vector3 v5=mapSphere(i,j-1);
 				OBJFace face1=new OBJFace(3,true,true);
 				face1.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
 				face1.setVertex(1, (int)v2.x, (int)v2.y, (int)v2.z);
 				face1.setVertex(2, (int)v3.x, (int)v3.y, (int)v3.z);
 				mesh.faces.add(face1);
-				
-				OBJFace face2=new OBJFace(3,true,true);
-				face2.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
-				face2.setVertex(1, (int)v4.x, (int)v4.y, (int)v4.z);
-				face2.setVertex(2, (int)v5.x, (int)v5.y, (int)v5.z);
-				mesh.faces.add(face2);
+			}
+		}
+		for(int j=1;j<m;j++) {
+			for(int i=1;i<=n;i++) {
+				Vector3 v1=mapSphere(i,j);
+				Vector3 v2=mapSphere(i-1,j);
+				Vector3 v3=mapSphere(i,j-1);
+				OBJFace face1=new OBJFace(3,true,true);
+				face1.setVertex(0, (int)v1.x, (int)v1.y, (int)v1.z);
+				face1.setVertex(1, (int)v2.x, (int)v2.y, (int)v2.z);
+				face1.setVertex(2, (int)v3.x, (int)v3.y, (int)v3.z);
+				mesh.faces.add(face1);
 			}
 		}
 		

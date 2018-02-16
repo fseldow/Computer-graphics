@@ -34,9 +34,9 @@ public class PerspectiveCamera extends Camera {
         // 1) Set the 3 basis vectors in the orthonormal basis,
         // based on viewDir and viewUp
         // 2) Set up the helper variables if needed
-    	z=viewDir.clone().normalize();
-    	y=viewUp.clone().normalize();
-    	x=z.clone().cross(y).normalize();
+    	z=viewDir.clone().mul(-1).normalize();
+    	x=viewUp.clone().cross(z).normalize();
+    	y=z.clone().cross(x).normalize();
 
     }
 
@@ -60,7 +60,7 @@ public class PerspectiveCamera extends Camera {
         //    should depend on your transformed inU and inV and your basis vectors,
         //    as well as the projection distance.
     	Vector3 temp=new Vector3(inU,inV,projDistance);
-    	Vector3d direction=new Vector3d(x.clone().mul(temp.x).add(y.clone().mul(temp.y)).add(z.clone().mul(temp.z)));
+    	Vector3d direction=new Vector3d(x.clone().mul(temp.x).add(y.clone().mul(temp.y)).add(z.clone().mul(-temp.z)));
     	
     	outRay.set(origin,direction);
 

@@ -18,9 +18,9 @@ public class OrthographicCamera extends Camera {
         // TODO#A2: Fill in this function.
         // 1) Set the 3 basis vectors in the orthonormal basis, 
         //    based on viewDir and viewUp
-    	z=viewDir.clone().normalize();
-    	y=viewUp.clone().normalize();
-    	x=z.clone().cross(y).normalize();
+    	z=viewDir.clone().mul(-1).normalize();
+    	x=viewUp.clone().cross(z).normalize();
+    	y=z.clone().cross(x).normalize();
         // 2) Set up the helper variables if needed
 
     }

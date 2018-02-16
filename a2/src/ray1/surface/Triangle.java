@@ -67,14 +67,17 @@ public class Triangle extends Surface {
 	  Vector3d ori=rayIn.origin;
 	  Vector3d dir=rayIn.direction;
 	  Vector3 v0 = owner.getMesh().getPosition(face,0);
-	  if (dir.clone().dot(norm)==0)return false;
+	  //if (dir.clone().dot(norm)==0)return false;
 	  Matrix3d A=new Matrix3d(
 			  a,d,dir.x,
 			  b,e,dir.y,
 			  c,f,dir.z
 			  );
 	  Vector3d off=new Vector3d(v0).clone().sub(ori);
-	  Vector3d result=A.clone().invert().mul(off);
+	  Vector3d result;
+	  try{
+		  result=A.clone().invert().mul(off);
+	  }catch(Exception e) {return false;};
 	  double u=result.z;
 	  if(u<0)return false;
 	  if(u<rayIn.start)return false;
@@ -86,6 +89,12 @@ public class Triangle extends Surface {
 	  */
 	  Vector3d pos=ori.clone().add(dir.clone().mul(u));
 	  
+	  if(face.hasNormals()) {
+		  norm=owner.getMesh().getNormal(face, 0).clone().mul((float)(1-result.x-result.y))
+				  .add(owner.getMesh().getNormal(face, 1).clone().mul((float)result.x))
+				  .add(owner.getMesh().getNormal(face, 2).clone().mul((float)result.y))
+				  .div(3).normalize();
+	  }
 	  
 	  outRecord.location.set(pos);
 	  outRecord.surface=this;

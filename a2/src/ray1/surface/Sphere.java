@@ -61,9 +61,12 @@ public class Sphere extends Surface {
 			  /(d.clone().dot(d));
 	  u2=(-d.clone().dot(e.clone().sub(center))+Math.sqrt(temp))
 			  /(d.clone().dot(d));
-	  if(u1>=0)u=u1;
-	  else if(u2>=0)u=u2;
+	  
+	  if(u1>rayIn.start&&u1<rayIn.end)u=u1;
+	  else if(u2>rayIn.start&&u2<rayIn.end)u=u2;
 	  else return false;
+	  
+	  
 	  Vector3d pos=e.clone().add(d.clone().mul(u));
 	  Vector3d offset=pos.clone().sub(center);
 	  Vector3d norm=new Vector3d(offset.clone().normalize());
@@ -71,7 +74,7 @@ public class Sphere extends Surface {
 	  outRecord.location.set(pos);
 	  outRecord.normal.set(norm);
 	  outRecord.texCoords.set(uv);
-	  outRecord.surface=new Sphere();
+	  outRecord.surface=this;
 	  outRecord.t=u;
 	  return true;
   }

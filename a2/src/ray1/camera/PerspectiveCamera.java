@@ -1,5 +1,7 @@
 package ray1.camera;
 
+import egl.math.Vector3;
+import egl.math.Vector3d;
 import ray1.Ray;
 
 /**
@@ -23,7 +25,7 @@ public class PerspectiveCamera extends Camera {
     //TODO#A2: create necessary new variables/objects here, including an orthonormal basis
     //          formed by three basis vectors and any other helper variables 
     //          if needed.
-
+    Vector3 x,y,z;
     /**
      * Initialize the derived view variables to prepare for using the camera.
      */
@@ -32,6 +34,9 @@ public class PerspectiveCamera extends Camera {
         // 1) Set the 3 basis vectors in the orthonormal basis,
         // based on viewDir and viewUp
         // 2) Set up the helper variables if needed
+    	z=viewDir.clone().normalize();
+    	y=viewUp.clone().normalize();
+    	x=z.clone().cross(y).normalize();
 
     }
 
@@ -47,10 +52,17 @@ public class PerspectiveCamera extends Camera {
         // 1) Transform inU so that it lies between [-viewWidth / 2, +viewWidth / 2] 
         //    instead of [0, 1]. Similarly, transform inV so that its range is
         //    [-vieHeight / 2, +viewHeight / 2]
+    	inU = inU * (viewWidth) - viewWidth / 2;
+    	inV = inV * (viewHeight) - viewHeight / 2;
         // 2) Set the origin field of outRay for a perspective camera.
+    	Vector3d origin=new Vector3d(viewPoint);
         // 3) Set the direction field of outRay for an perspective camera. This
         //    should depend on your transformed inU and inV and your basis vectors,
         //    as well as the projection distance.
+    	Vector3 temp=new Vector3(inU,inV,projDistance);
+    	Vector3d direction=new Vector3d(x.clone().mul(temp.x).add(y.clone().mul(temp.y)).add(z.clone().mul(temp.z)));
+    	
+    	outRay.set(origin,direction);
 
     }
 }

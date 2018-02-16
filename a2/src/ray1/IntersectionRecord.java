@@ -39,4 +39,5 @@ public class IntersectionRecord {
     surface = inRecord.surface;   
     t = inRecord.t;
   }
+
 }

@@ -2,6 +2,8 @@ package ray1.surface;
 
 import ray1.IntersectionRecord;
 import ray1.Ray;
+import egl.math.Vector2;
+import egl.math.Vector2d;
 import egl.math.Vector3;
 import egl.math.Vector3d;
 
@@ -34,35 +36,43 @@ public class Sphere extends Surface {
    * @param ray the ray to intersect
    * @return true if the surface intersects the ray
    */
+  private Vector2d getUV(Vector3d related_position){
+	  double u,v;
+	  double x,y,z;
+	  x=related_position.x;
+	  y=related_position.y;
+	  z=related_position.z;
+	  v=Math.asin(y)+M_2PI/4;
+	  double new_r=Math.sqrt(1-y*y);
+	  u=(Math.acos(x/new_r)-M_2PI/2)/M_2PI;
+	  Vector2d ret=new Vector2d(u,v);
+	  return ret;
+  }
+  
   public boolean intersect(IntersectionRecord outRecord, Ray rayIn) {
     // TODO#A2: fill in this function.
 	  //calculate point map to line
-	  double u=new Vector3d(center).clone().sub(rayIn.origin).dot(rayIn.direction);
-	  Vector3d dis=new Vector3d(center).clone().sub(rayIn.origin).sub(rayIn.direction.clone().mul(u));
-	  if(u<0)return false;
-	  if(dis.clone().dot(dis)>radius*radius)return false;
-	  else {
-		  double middle=u/2;
-		  double end=u;
-		  double start=0;
-		  while(u-middle>1E-5) {
-			  Vector3d pos=rayIn.origin.clone().add(rayIn.direction.clone().mul(middle));
-			  Vector3d offset=pos.clone().sub(center);
-			  double distance=offset.clone().dot(offset);
-			  if(Math.abs(distance-radius*radius)<1E-5) {
-				  //postion!
-				  return true;
-			  }
-			  if(distance<radius*radius) {
-				  end=middle;
-			  }
-			  else {
-				  start=middle;
-			  }
-			  middle=(end+start)/2;
-		  }
-		  //postion!
-	  }
+	  double u1,u2,u;
+	  Vector3d d=rayIn.direction;
+	  Vector3d e=rayIn.origin;
+	  double temp=Math.pow(d.clone().dot(e.clone().sub(center)), 2)-(d.clone().dot(d))*(e.clone().sub(center).dot(e.clone().sub(center))-Math.pow(radius,2));
+	  if(temp<0)return false;
+	  u1=(-d.clone().dot(e.clone().sub(center))-Math.sqrt(temp))
+			  /(d.clone().dot(d));
+	  u2=(-d.clone().dot(e.clone().sub(center))+Math.sqrt(temp))
+			  /(d.clone().dot(d));
+	  if(u1>=0)u=u1;
+	  else if(u2>=0)u=u2;
+	  else return false;
+	  Vector3d pos=e.clone().add(d.clone().mul(u));
+	  Vector3d offset=pos.clone().sub(center);
+	  Vector3d norm=new Vector3d(offset.clone().normalize());
+	  Vector2d uv=getUV(offset.clone().normalize());
+	  outRecord.location.set(pos);
+	  outRecord.normal.set(norm);
+	  outRecord.texCoords.set(uv);
+	  outRecord.surface=new Sphere();
+	  outRecord.t=u;
 	  return true;
   }
   

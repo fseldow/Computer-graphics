@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import ray1.camera.Camera;
+import ray1.shader.Lambertian;
+import ray1.shader.Shader;
 import egl.math.Colorf;
 
 public class RayTracer {
@@ -249,6 +251,13 @@ public class RayTracer {
 		//    just return the scene's background color.
 		// 2) Get the shader from the intersection record.
 		// 3) Call the shader's shade() method to set the color for this ray.
+		IntersectionRecord outRecord=new IntersectionRecord();
+		if(!scene.getFirstIntersection(outRecord, ray)) {
+			outColor=scene.backColor;
+			return;
+		}
+		Lambertian s=new Lambertian();
+		s.shade(outColor,scene,ray,outRecord);
 				
 	}
 }

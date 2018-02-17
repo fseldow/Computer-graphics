@@ -1,10 +1,12 @@
 package ray1.shader;
 
 import ray1.IntersectionRecord;
+import ray1.Light;
 import ray1.Ray;
 import ray1.Scene;
 import egl.math.Color;
 import egl.math.Colorf;
+import egl.math.Vector3d;
 
 /**
  * A Lambertian material scatters light equally in all directions. BRDF value is
@@ -46,7 +48,14 @@ public class Lambertian extends Shader {
 		//    the intersection point from the light's position.
 		// 4) Compute the color of the point using the Lambert shading model. Add this value
 		//    to the output.
-
+		outIntensity.set(scene.getBackColor());
+		for(Light light:scene.getLights()) {
+			if(!isShadowed(scene,light,record,ray)) {
+				Vector3d l=new Vector3d(light.position.clone()).sub(record.location);
+				double d2=(l.clone()).dot(l);
+				outIntensity.add(light.intensity.clone().mul(diffuseColor).mul((float)(Math.max(record.normal.clone().dot(l.normalize()), 0)/d2/Math.PI)));
+			}
+		}
 	}
 
 }

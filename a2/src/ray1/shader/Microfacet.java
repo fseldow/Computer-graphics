@@ -1,6 +1,7 @@
 package ray1.shader;
 
 import ray1.IntersectionRecord;
+import ray1.Light;
 import ray1.Ray;
 import ray1.Scene;
 import ray1.shader.BRDF;
@@ -56,6 +57,10 @@ public class Microfacet extends Shader {
 		// 4) Compute the color of the point using the microfacet shading model. 
 		//	  EvalBRDF method of brdf object should be called to evaluate BRDF value at the shaded surface point.
 		// 5) Add the computed color value to the output.
+		outIntensity.set(scene.getBackColor());
+		for(Light light:scene.getLights()) {
+			
+		}
 		
 	}
 

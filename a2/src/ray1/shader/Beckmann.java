@@ -28,7 +28,21 @@ public class Beckmann  extends BRDF
 		// Walter, Bruce, et al. 
 		// "Microfacet models for refraction through rough surfaces." 
 		// Proceedings of the 18th Eurographics conference on Rendering Techniques. Eurographics Association, 2007.
-
+		float F,G,D;
+		Vector3 h=new Vector3();
+		h=IncomingVec.clone().add(OutgoingVec).normalize();
+		//calculate F
+		float g,c;
+		c=Math.abs(IncomingVec.clone().dot(h));
+		float ni=1.0f;
+		g=(float)Math.sqrt(nt*nt/(ni*ni)-1+c*c);
+		F=(float)(0.5*
+				Math.pow((g-c), 2)/Math.pow((g+c), 2)
+				*(1+Math.pow(c*(c+g)-1, 2)/Math.pow(c*(c+g)+1, 2))
+				);
+		//calculate G
+		
+		//calculate D
 		return 0.0f;
 	}
 	

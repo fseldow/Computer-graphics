@@ -252,12 +252,14 @@ public class RayTracer {
 		// 2) Get the shader from the intersection record.
 		// 3) Call the shader's shade() method to set the color for this ray.
 		IntersectionRecord outRecord=new IntersectionRecord();
-		if(!scene.getFirstIntersection(outRecord, ray)) {
-			outColor=scene.backColor;
+		if(ray.start==0&&ray.end==0)ray.makeOffsetRay();
+		if(!scene.getFirstIntersection(outRecord,ray)) {
+			outColor.set(scene.backColor);
 			return;
 		}
-		Lambertian s=new Lambertian();
-		s.shade(outColor,scene,ray,outRecord);
+		
+		outRecord.surface.getShader().shade(outColor, scene, ray, outRecord);
+		
 				
 	}
 }

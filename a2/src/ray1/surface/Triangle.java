@@ -93,7 +93,7 @@ public class Triangle extends Surface {
 		  norm=owner.getMesh().getNormal(face, 0).clone().mul((float)(1-result.x-result.y))
 				  .add(owner.getMesh().getNormal(face, 1).clone().mul((float)result.x))
 				  .add(owner.getMesh().getNormal(face, 2).clone().mul((float)result.y))
-				  .div(3).normalize();
+				  .normalize();
 	  }
 	  
 	  outRecord.location.set(pos);

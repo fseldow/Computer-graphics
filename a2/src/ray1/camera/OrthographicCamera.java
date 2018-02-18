@@ -46,7 +46,8 @@ public class OrthographicCamera extends Camera {
         // 3) Set the direction field of outRay for an orthographic camera.
     	Vector3d direction= new Vector3d(viewDir.clone());
   	
-    	outRay.set(origin,direction);
+    	outRay.set(origin,direction.normalize());
+    	outRay.makeOffsetRay();
     }
 
 }

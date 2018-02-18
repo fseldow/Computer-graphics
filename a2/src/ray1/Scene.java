@@ -150,11 +150,12 @@ public class Scene {
 		for(Surface surface:surfaces) {
 			IntersectionRecord tempRecord=new IntersectionRecord();
 			if(surface.intersect(tempRecord, rayIn)) {
+				if(anyIntersection)return true;
 				if(tempRecord.t<t_min) {
 					t_min=tempRecord.t;
 					outRecord.set(tempRecord);
+					flag=true;
 				}
-				flag=true;
 			}
 		}
 		return flag;

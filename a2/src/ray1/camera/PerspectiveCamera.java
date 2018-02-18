@@ -62,7 +62,7 @@ public class PerspectiveCamera extends Camera {
     	Vector3 temp=new Vector3(inU,inV,projDistance);
     	Vector3d direction=new Vector3d(x.clone().mul(temp.x).add(y.clone().mul(temp.y)).add(z.clone().mul(-temp.z)));
     	
-    	outRay.set(origin,direction);
-
+    	outRay.set(origin,direction.normalize());
+    	outRay.makeOffsetRay();
     }
 }

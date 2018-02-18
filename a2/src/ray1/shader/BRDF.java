@@ -1,4 +1,4 @@
--package ray1.shader;
+package ray1.shader;
 
 import egl.math.Vector3;
 

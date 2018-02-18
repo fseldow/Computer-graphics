@@ -1,6 +1,7 @@
 package ray1.shader;
 
 import ray1.shader.Texture;
+import egl.math.Color;
 import egl.math.Colorf;
 import egl.math.Vector2;
 
@@ -26,8 +27,23 @@ public class ClampTexture extends Texture {
 		//    and the image object from the Texture class), convert it to a Colord, and return it.
 		// NOTE: By convention, UV coordinates specify the lower-left corner of the image as the
 		//    origin, but the ImageBuffer class specifies the upper-left corner as the origin.
-			
-		return new Colorf(0,0,0);
+		float u=texCoord.x,v=texCoord.y;
+		if(u<0) u-=(int)u-1;
+		else u-=(int)u;
+		
+		if(v<0) v-=(int)v-1;
+		else v-=(int)v;
+		
+		int h=image.getHeight();
+		int w=image.getWidth();
+		int x,y;
+		x=(int)(u*w+0.5)%w;
+		y=(int)(v*h+0.5)%h;
+		
+
+		Color c=Color.fromIntRGB(image.getRGB(x, h-1-y));
+		Colorf cf=new Colorf(c);
+		return cf;
 	}
 
 }

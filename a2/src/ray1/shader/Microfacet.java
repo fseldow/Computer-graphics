@@ -60,9 +60,11 @@ public class Microfacet extends Shader {
 		// 4) Compute the color of the point using the microfacet shading model. 
 		//	  EvalBRDF method of brdf object should be called to evaluate BRDF value at the shaded surface point.
 		// 5) Add the computed color value to the output.
-		outIntensity.set(new Colorf(0,0,0));
+		outIntensity.set(Color.Black);
 		Vector3 w0=new Vector3(ray.direction.clone().mul(-1));
 		Vector3 n=new Vector3(record.normal.clone());
+		if(w0.dot(n)<0)return;
+		
 		if(texture!=null) {
 			setDiffuseColor(texture.getTexColor(new Vector2(record.texCoords)));
 		}
@@ -70,9 +72,10 @@ public class Microfacet extends Shader {
 			if(!isShadowed(scene,light,record,ray)) {
 				Vector3 l1=light.position.clone().sub(new Vector3(record.location));
 				Vector3 w1=l1.clone().normalize();
+				
 				float r2=l1.clone().dot(l1);
 				float f=brdf.EvalBRDF(w1, w0, n);
-				outIntensity.add(light.intensity.clone().mul(microfacetColor).mul((float)(Math.max(record.normal.clone().dot(w1), 0)/r2))).mul(f);
+				outIntensity.add(light.intensity.clone().mul(microfacetColor).mul((float)(Math.max(record.normal.dot(w1), 0)/r2))).mul(f);
 				outIntensity.add(light.intensity.clone().mul(diffuseColor).mul((float)(Math.max(record.normal.clone().dot(w1), 0)/r2/Math.PI)));
 			}
 			

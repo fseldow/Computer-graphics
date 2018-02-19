@@ -52,11 +52,15 @@ public class Lambertian extends Shader {
 		if(texture!=null) {
 			setDiffuseColor(texture.getTexColor(new Vector2(record.texCoords)));
 		}
-		outIntensity.set(new Colorf(0,0,0));
+		outIntensity.set(Color.Black);
 		for(Light light:scene.getLights()) {
 			if(!isShadowed(scene,light,record,ray)) {
+				
 				Vector3d l=new Vector3d(light.position.clone()).sub(record.location);
-				double d2=(l.clone()).dot(l);
+				
+				//if(ray.direction.dot(record.normal)*l.dot(record.normal)>0)continue;
+				
+				double d2=l.dot(l);
 				outIntensity.add(light.intensity.clone().mul(diffuseColor).mul((float)(Math.max(record.normal.clone().dot(l.clone().normalize()), 0)/d2/Math.PI)));
 			}
 		}

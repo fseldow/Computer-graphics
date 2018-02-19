@@ -47,7 +47,7 @@ public class OrthographicCamera extends Camera {
     	Vector3d direction= new Vector3d(viewDir.clone());
   	
     	outRay.set(origin,direction.normalize());
-    	outRay.makeOffsetRay();
+    	//outRay.makeOffsetRay();
     }
 
 }

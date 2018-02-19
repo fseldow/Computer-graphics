@@ -42,10 +42,14 @@ public class Sphere extends Surface {
 	  x=related_position.x;
 	  y=related_position.y;
 	  z=related_position.z;
-	  v=Math.asin(y)+M_2PI/4;
+	  v=(Math.asin(y)+M_2PI/4)/(M_2PI/2);
 	  double new_r=Math.sqrt(1-y*y);
-	  u=(Math.acos(x/new_r)-M_2PI/2)/M_2PI;
+
+	  if(x<0) {u=(Math.acos(-z/new_r))/M_2PI;}
+	  else {u=(Math.acos(z/new_r)+M_2PI/2)/M_2PI;}
+	  
 	  Vector2d ret=new Vector2d(u,v);
+	  
 	  return ret;
   }
   

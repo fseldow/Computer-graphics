@@ -79,9 +79,9 @@ public class Triangle extends Surface {
 		  result=A.clone().invert().mul(off);
 	  }catch(Exception e) {return false;};
 	  double u=result.z;
-	  if(u<0)return false;
-	  if(u<rayIn.start)return false;
-	  if(u>rayIn.end)return false;
+	  if(u<=0)return false;
+	  if(u<=rayIn.start)return false;
+	  if(u>=rayIn.end)return false;
 	  if(result.x<0||result.y<0||(1-result.x-result.y)<0)return false;
 	  /*
 	   * u=(new Vector3d(owner.getMesh().getPosition(face,0)).sub(ori).dot(norm))/
@@ -90,10 +90,11 @@ public class Triangle extends Surface {
 	  Vector3d pos=ori.clone().add(dir.clone().mul(u));
 	  
 	  if(face.hasNormals()) {
-		  norm=owner.getMesh().getNormal(face, 0).clone().mul((float)(1-result.x-result.y))
+		  norm=new Vector3();
+		  norm.set(owner.getMesh().getNormal(face, 0).clone().mul((float)(1-result.x-result.y))
 				  .add(owner.getMesh().getNormal(face, 1).clone().mul((float)result.x))
 				  .add(owner.getMesh().getNormal(face, 2).clone().mul((float)result.y))
-				  .normalize();
+				  .normalize());
 	  }
 	  
 	  outRecord.location.set(pos);
@@ -104,6 +105,7 @@ public class Triangle extends Surface {
 		  Vector2d uv=new Vector2d(owner.getMesh().getUV(face, 0)).clone().mul(1-result.x-result.y).add(new Vector2d(owner.getMesh().getUV(face, 1)).clone().mul(result.x)).add(new Vector2d(owner.getMesh().getUV(face, 2)).clone().mul(result.y));
 		  outRecord.texCoords.set(uv);
 	  }
+	  
 	  return true;
   }
 

@@ -29,27 +29,26 @@ public class RepeatTexture extends Texture {
 		//    and the image object from the Texture class), convert it to a Colorf, and return it.
 		// NOTE: By convention, UV coordinates specify the lower-left corner of the image as the
 		//    origin, but the ImageBuffer class specifies the upper-left corner as the origin.
-		
 		float u=texCoord.x,v=texCoord.y;
+		if(u<0) u-=(int)u-1;
+		else u-=(int)u;
+		
+		if(v<0) v-=(int)v-1;
+		else v-=(int)v;
+		
 		int h=image.getHeight();
 		int w=image.getWidth();
 		int x,y;
-		float i,j;
-		i=u*w+0.5f;
-		j=v*h+0.5f;
+		x=(int)(u*w+0.5)%w;
+		y=(int)(v*h+0.5)%h;
 		
-		x=(int)i;
-		y=(int)j;
-		x=Math.max(x,0);
-		x=Math.min(x,w-1);
-		y=Math.max(y,0);
-		y=Math.min(y,h-1);
 
-		
-		
-		Color c=Color.fromIntRGB(image.getRGB(1,1));
+		Color c=Color.fromIntRGB(image.getRGB(x, h-1-y));
 		Colorf cf=new Colorf(c);
 		return cf;
+		
+		
+		
 
 	}
 

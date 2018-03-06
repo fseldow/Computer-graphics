@@ -151,5 +151,12 @@ public abstract class Manipulator implements Renderable {
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 	}
+	
+	public Vector3 calculateT(Vector3 manipulationOri, Vector3 manipulationDir, Vector3 anotherAxis, Vector3 rayOri, Vector3 rayDir) {
+		Matrix3 A=new Matrix3(manipulationDir, anotherAxis, rayDir);
+		A.transpose().invert();
+		Vector3 ret = A.mul(rayOri.clone().sub(manipulationOri));
+		return ret;
+	}
 
 }
